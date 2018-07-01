@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"sync"
+	"time"
 
 	quic "github.com/lucas-clemente/quic-go"
 
@@ -51,6 +52,7 @@ func main() {
 	for _, addr := range urls {
 		utils.Infof("GET %s", addr)
 		go func(addr string) {
+			start := time.Now()
 			rsp, err := hclient.Get(addr)
 			if err != nil {
 				panic(err)
@@ -62,8 +64,10 @@ func main() {
 			if err != nil {
 				panic(err)
 			}
+			elapsed := time.Since(start)
 			utils.Infof("Request Body:")
 			utils.Infof("%s", body.Bytes())
+			utils.Infof("%s", elapsed)
 			wg.Done()
 		}(addr)
 	}
